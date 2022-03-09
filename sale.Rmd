@@ -32,23 +32,7 @@ gs4_auth(email = 'srivijayasree100@gmail.com')
 ```
 
 
-```{r echo=FALSE, message=FALSE}
-sale <- sale <- read_sheet('https://docs.google.com/spreadsheets/d/1HKIX8O5FlycBnk4IEv0oz86CVvMmnQsIU_AG5AzPK9w/edit#gid=0', sheet = 'data-products')
-sale1 <- janitor::clean_names(sale)
-```
-
-## Sale  
-```{r  echo=FALSE, message=FALSE}
-todayssale <- sale1 %>% 
-  mutate(Product= data_products_product,
-                               Category=data_products_category, 
-                               Detail= data_products_details,
-                               Boxes= data_products_boxes,
-                               Box_detail=data_products_boxes_detail) %>%  
-  group_by(Product,Category, Detail) %>% summarise(Sale=sum(Box_detail), .groups = 'drop')
-todayssale %>%  gt()
-```
-## Stock  
+## 1. Opening stock  
 
 ```{r echo=FALSE, message=FALSE}
 stock <- read_sheet('https://docs.google.com/spreadsheets/d/11cEs7BGhWz256TbTzW1OU8AMcctfvk6cxgblJiYCs7Y/edit?usp=sharing', sheet = 'data-products' )
@@ -65,13 +49,30 @@ todaysstock <- stock1 %>%
   group_by(Product,Category, Detail) %>% summarise(Procurment=sum(Box_detail), .groups = 'drop')
 todaysstock %>%  gt()
 ```
-## Stock-Sale
+
+```{r echo=FALSE, message=FALSE}
+sale <- sale <- read_sheet('https://docs.google.com/spreadsheets/d/1HKIX8O5FlycBnk4IEv0oz86CVvMmnQsIU_AG5AzPK9w/edit#gid=0', sheet = 'data-products')
+sale1 <- janitor::clean_names(sale)
+```
+
+## 2. Sale  
+```{r  echo=FALSE, message=FALSE}
+todayssale <- sale1 %>% 
+  mutate(Product= data_products_product,
+                               Category=data_products_category, 
+                               Detail= data_products_details,
+                               Boxes= data_products_boxes,
+                               Box_detail=data_products_boxes_detail) %>%  
+  group_by(Product,Category, Detail) %>% summarise(Sale=sum(Box_detail), .groups = 'drop')
+todayssale %>%  gt()
+```
+## 3. Closing stock
 ```{r echo=FALSE, message=FALSE}
 saleStock <- full_join(x = todaysstock, y = todayssale)
 
 saleStock %>% group_by(Product,Category, Detail,Procurment, Sale) %>%
   select(Sale) %>%  mutate_at(vars(Sale), ~replace_na(., 0)) %>% 
-summarise(Finalstock= Procurment-Sale,.groups = 'drop') %>% gt()
+summarise(ClosingStock= Procurment-Sale,.groups = 'drop') %>% gt()
 
 ```
 
@@ -80,10 +81,10 @@ summarise(Finalstock= Procurment-Sale,.groups = 'drop') %>% gt()
 
 Madanapalle
 
-*Thank you*
+*.....................................*
 
 \begingroup
-\fontfamily{phv}\fontsize{7}{18}\selectfont
+\fontfamily{phv}\fontsize{6}{18}\selectfont
 Produced with RStudio, Googlesheet by cssaneesh@gmail.com
 \endgroup
 
