@@ -5,9 +5,21 @@ output: pdf_document
 
 # Stock & Sales Report of Sri Vijayasree <font size="10">
 
-### Date: '`r format(Sys.Date(), "%B %d, %Y")`'
+### Date: `r format(Sys.Date(), "%B %d, %Y")`
+
+
 
 ```{r echo=FALSE, message=FALSE}
+# install.packages(googlesheets4)
+# install.packages(tidyverse)
+# install.packages(readxl)
+# install.packages(janitor)
+# install.packages(gt)
+```
+
+
+```{r echo=FALSE, message=FALSE}
+library(googlesheets4)
 library(tidyverse)
 library(readxl)
 library(janitor)
@@ -15,8 +27,13 @@ library(gt)
 ```
 
 ```{r echo=FALSE, message=FALSE}
-sale <- read_excel("sale038.xlsx", # paste file name inside " "
-                   sheet = "data-products")
+gs4_auth(email = 'srivijayasree100@gmail.com')
+
+```
+
+
+```{r echo=FALSE, message=FALSE}
+sale <- sale <- read_sheet('https://docs.google.com/spreadsheets/d/1HKIX8O5FlycBnk4IEv0oz86CVvMmnQsIU_AG5AzPK9w/edit#gid=0', sheet = 'data-products')
 sale1 <- janitor::clean_names(sale)
 ```
 
@@ -34,8 +51,7 @@ todayssale %>%  gt()
 ## Stock  
 
 ```{r echo=FALSE, message=FALSE}
-stock <- read_excel("stock038.xlsx", # paste file name inside " "
-                    sheet = "data-products")
+stock <- read_sheet('https://docs.google.com/spreadsheets/d/11cEs7BGhWz256TbTzW1OU8AMcctfvk6cxgblJiYCs7Y/edit?usp=sharing', sheet = 'data-products' )
 stock1 <- janitor::clean_names(stock)
 ```
 
@@ -60,11 +76,14 @@ summarise(Finalstock= Procurment-Sale,.groups = 'drop') %>% gt()
 ```
 
 ### Prepared by Sanesh
-'`r format(Sys.Date(), "%B %d, %Y")`'  
+`r format(Sys.Date(), "%B %d, %Y")`
 
 Madanapalle
 
 *Thank you*
 
-
+\begingroup
+\fontfamily{phv}\fontsize{7}{18}\selectfont
+Produced with RStudio, Googlesheet by cssaneesh@gmail.com
+\endgroup
 
