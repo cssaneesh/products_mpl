@@ -1,73 +1,70 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
+output: pdf_document
 ---
-
 *SALES REPORT*  
 
-# Sales & Procurment Report of Sri Vijayasree  
+# Stock & Sales Report of Sri Vijayasree <font size="10">
 
-### Prepared by Sanesh  
-### Date:
-```{r echo=FALSE, message=FALSE}
-Sys.Date()
-```
+### Date: '`r format(Sys.Date(), "%B %d, %Y")`'
+
 ```{r echo=FALSE, message=FALSE}
 library(tidyverse)
 library(readxl)
 library(janitor)
 library(gt)
+```
 
-sale <- read_excel("mar8.xlsx", # COPY THE NAME OF THE FILE AND REPLACE sale1
-                   sheet = "data-products", 
-    col_types = c("text", "text", "text", 
-        "text", "text", "text", "numeric", 
-        "numeric", "text", "text"))
+```{r echo=FALSE, message=FALSE}
+sale <- read_excel("sale038.xlsx", # paste file name inside " "
+                   sheet = "data-products")
 sale1 <- janitor::clean_names(sale)
 ```
-### Sale  
+
+## Sale  
 ```{r  echo=FALSE, message=FALSE}
-todayssale <- sale1 %>% mutate(Sr.No = row_number()) %>% 
+todayssale <- sale1 %>% 
   mutate(Product= data_products_product,
                                Category=data_products_category, 
                                Detail= data_products_details,
                                Boxes= data_products_boxes,
                                Box_detail=data_products_boxes_detail) %>%  
-  group_by(Sr.No, Product,Category, Detail) %>% summarise(Sale=sum(Box_detail), .groups = 'drop')
+  group_by(Product,Category, Detail) %>% summarise(Sale=sum(Box_detail), .groups = 'drop')
 todayssale %>%  gt()
 ```
-### Stock  
+## Stock  
 
 ```{r echo=FALSE, message=FALSE}
-stock <- read_excel("stock8.xlsx", sheet = "data-products")
+stock <- read_excel("stock038.xlsx", # paste file name inside " "
+                    sheet = "data-products")
 stock1 <- janitor::clean_names(stock)
 ```
 
 ```{r  echo=FALSE, message=FALSE}
-todaysstock <- stock1 %>% mutate(Sr.No = row_number()) %>% 
+todaysstock <- stock1 %>% 
   mutate(Product= data_products_product,
                                Category=data_products_category, 
                                Detail= data_products_details,
                                Boxes= data_products_boxes,
                                Box_detail=data_products_boxes_detail) %>%  
-  group_by(Sr.No, Product,Category, Detail) %>% summarise(Procurment=sum(Box_detail), .groups = 'drop')
+  group_by(Product,Category, Detail) %>% summarise(Procurment=sum(Box_detail), .groups = 'drop')
 todaysstock %>%  gt()
 ```
-# Sale vs Stock
+## Stock-Sale
 ```{r echo=FALSE, message=FALSE}
-saleStock <- full_join(x = todaysstock, y = todayssale) %>% 
-  group_by(Product,Category, Detail,Procurment, Sale ) %>% 
-  mutate(Sr.No = row_number()) %>% summarise(Final_stock= Procurment-Sale)
+saleStock <- full_join(x = todaysstock, y = todayssale)
 
-
-left_join  (x = todaysstock, y = todayssale) %>% 
-  distinct(Product,Category, Detail, Procurment, Sale ) %>% 
-  group_by(Product,Category, Detail,Procurment, Sale ) %>% 
-  mutate(Sr.No = row_number()) %>% summarise(Final_stock= Procurment-Sale)
-  
+saleStock %>% group_by(Product,Category, Detail,Procurment, Sale) %>%
+  select(Sale) %>%  mutate_at(vars(Sale), ~replace_na(., 0)) %>% 
+summarise(Finalstock= Procurment-Sale,.groups = 'drop') %>% gt()
 
 ```
+
+### Prepared by Sanesh
+'`r format(Sys.Date(), "%B %d, %Y")`'  
+
+Madanapalle
+
+*Thank you*
 
 
 
